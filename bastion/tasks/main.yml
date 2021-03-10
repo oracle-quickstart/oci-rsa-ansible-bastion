@@ -1,0 +1,77 @@
+---
+# tasks file for bastion
+- name: Ensure inbound SSH port 22
+  ansible.posix.firewalld:
+    port: 22/tcp 
+    state: enabled
+    permanent: true
+  become: true
+- name: Install required packages
+  package:
+    name: "{{ item }}"
+    state: latest # noqa package-latest
+  with_items:
+    - pam_oath
+    - oathtool
+    - gen-oath-safe
+  become: true
+- name: Set up /home/opc/.oath
+  ansible.builtin.file:
+    name: /home/opc/.oath
+    owner: opc
+    group: opc
+    mode: '0700'
+    state: directory
+  become: true
+- name: Deploy setup-totp.sh
+  ansible.builtin.template:
+    src: setup-totp.sh
+    dest: /home/opc/.oath/setup-totp.sh
+    owner: root
+    group: root
+    mode: '0755'
+  become: true
+- name: Deploy pam.d.sshd
+  ansible.builtin.template:
+    src: pam.d.sshd
+    dest: /etc/pam.d/sshd
+    owner: root
+    group: root
+    mode: '0644'
+  become: true
+  notify: 
+    - Restart sshd
+- name: Deploy sshd_config
+  ansible.builtin.template:
+    src: sshd_config
+    dest: /etc/ssh/sshd_config
+    owner: root
+    group: root
+    mode: '0600'
+  become: true
+  notify: 
+    - Restart sshd
+- name: Set SELinux Context
+  community.general.sefcontext:
+    target: '/home/opc/.oath(/.*)?'
+    setype: ssh_home_t
+    state: present
+  become: true
+  notify: 
+    - Restore SELinux Context
+- name: Add setup-totp.sh to ops .bash_profile
+  ansible.builtin.lineinfile:
+    path: /home/opc/.bash_profile
+    line: 'bash ~/.oath/setup-totp.sh'
+    state: present
+  become: true
+- name: Initialize first time OTP file
+  ansible.builtin.copy:
+    dest: /home/opc/.oath/opc.oath
+    src: first-time-hotp
+    owner: root
+    group: root
+    mode: '0600'
+  become: true
+- name: deploy custom wazuh configuration
+  meta: noop

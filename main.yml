@@ -1,0 +1,9 @@
+---
+- hosts: all
+  roles: 
+    - role: base
+    - bastion
+    - role: geerlingguy.clamav
+      become: true
+    - role: wazuh-ansible/wazuh-ansible/roles/wazuh/ansible-wazuh-agent
+      become: true

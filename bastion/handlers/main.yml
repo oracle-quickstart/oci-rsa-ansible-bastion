@@ -1,0 +1,10 @@
+---
+# handlers file for bastion
+  - name: Restart sshd
+    ansible.builtin.service:
+      name: sshd
+      state: restarted
+    become: true
+  - name: Restore SELinux Context
+    ansible.builtin.command: restorecon -ir /home/opc/.oath/
+    become: true
