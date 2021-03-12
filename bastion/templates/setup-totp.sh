@@ -2,6 +2,9 @@
 oathdir="${HOME}/.oath"
 oathfile="${oathdir}/opc.oath"
  
+# Skip unless running over SSH
+test -z $SSH_TTY && exit
+
 sudo grep 'INITIAL SETUP' $oathfile > /dev/null 2>&1
  
 if [[ $? -eq 0 ]]

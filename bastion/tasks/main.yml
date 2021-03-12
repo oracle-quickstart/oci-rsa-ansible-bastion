@@ -59,7 +59,7 @@
   become: true
   notify: 
     - Restore SELinux Context
-- name: Add setup-totp.sh to ops .bash_profile
+- name: Add setup-totp.sh to opc .bash_profile
   ansible.builtin.lineinfile:
     path: /home/opc/.bash_profile
     line: 'bash ~/.oath/setup-totp.sh'
@@ -72,6 +72,7 @@
     owner: root
     group: root
     mode: '0600'
+    force: no
   become: true
 - name: deploy custom wazuh configuration
   meta: noop
