@@ -11,12 +11,11 @@
     name: chrony
     state: latest # noqa package-latest
   become: true
-# TODO: Schedule Ansible to run on a schedule once bootstrapping is solved
 - name: Activate cron job to run Ansible
   ansible.builtin.cron:
     name: Schedule for Ansible
     minute: "*/15"
-    job: "/bin/echo placeholder job"
+    job: "ANSIBLE_ROLES_PATH=/opt/oci-rsa/oci-rsa-ansible-bastion/.galaxy /usr/bin/ansible-playbook -i localhost, /opt/oci-rsa/oci-rsa-ansible-bastion/main.yml --connection=local"
   become: true
 - name: Ensure chrony.conf has correct server
   ansible.builtin.lineinfile:

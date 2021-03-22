@@ -1,7 +1,7 @@
 ---
 # tasks file for bastion
 - name: Ensure inbound SSH port 22
-  ansible.posix.firewalld:
+  firewalld:
     port: 22/tcp 
     state: enabled
     permanent: true
@@ -52,7 +52,7 @@
   notify: 
     - Restart sshd
 - name: Set SELinux Context
-  community.general.sefcontext:
+  sefcontext:
     target: '/home/opc/.oath(/.*)?'
     setype: ssh_home_t
     state: present
