@@ -1,2 +1,5 @@
 ---
 # vars file for bastion
+temp_report_path: "/home/opc"
+resource_bucket_name: "{{ bucket_name }}"
+file_name: "software_inventory_{{ ansible_hostname }}.csv"
