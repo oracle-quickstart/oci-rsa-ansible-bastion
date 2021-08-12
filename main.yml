@@ -11,3 +11,5 @@
       become: true
     - role: bastion
       become: true
+    - role: oci-rsa-ansible-base/wazuh_agent_configuration
+      become: true
