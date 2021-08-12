@@ -1,5 +1,4 @@
 ---
-# vars file for bastion
-temp_report_path: "/home/opc"
-resource_bucket_name: "{{ bucket_name }}"
-file_name: "software_inventory_{{ ansible_hostname }}.csv"
+# vars file for oci-rsa-ansible-bastion
+wazuh_manager_version: 4.1.5-1
+wazuh_agent_version: 4.1.5-1
