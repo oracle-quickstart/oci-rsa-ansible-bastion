@@ -1,7 +1,5 @@
 ---
 - hosts: all
-  vars_files:
-    - ../extra-variables.yml
   roles:
     - role: oci-rsa-ansible-base
       become: true
