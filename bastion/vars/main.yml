@@ -2,3 +2,13 @@
 # vars file for oci-rsa-ansible-bastion
 wazuh_manager_version: 4.1.5-1
 wazuh_agent_version: 4.1.5-1
+wazuh_managers:
+  - address: "{{ ossec['registration_address'] }}"
+    port: 1514
+    protocol: tcp
+    api_port: 55000
+    api_proto: https
+    api_user: wazuh
+    max_retries: 20
+    retry_interval: 1
+    register: yes

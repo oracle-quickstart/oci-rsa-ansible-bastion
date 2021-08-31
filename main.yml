@@ -6,17 +6,6 @@
     - role: geerlingguy.clamav
       become: true
     - role: wazuh-ansible/wazuh-ansible/roles/wazuh/ansible-wazuh-agent
-      vars:
-        wazuh_managers:
-          - address: "{{ ossec['registration_address'] }}"
-            port: 1514
-            protocol: tcp
-            api_port: 55000
-            api_proto: https
-            api_user: wazuh
-            max_retries: 20
-            retry_interval: 1
-            register: yes
       become: true
     - role: bastion
       become: true
