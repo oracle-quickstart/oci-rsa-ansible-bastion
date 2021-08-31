@@ -9,6 +9,6 @@ wazuh_managers:
     api_port: 55000
     api_proto: https
     api_user: wazuh
-    max_retries: 20
-    retry_interval: 1
+    max_retries: 30
+    retry_interval: 10
     register: yes
