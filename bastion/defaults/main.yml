@@ -1,2 +1,3 @@
 ---
 # defaults file for bastion
+registration_ip: "{{ ossec['registration_address'] }}"
