@@ -1,2 +1,3 @@
 ---
 # defaults file for bastion
+registration_address: "wazuh-lb.wazuh-cluster.local"
