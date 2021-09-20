@@ -1,5 +1,8 @@
 ---
 # vars file for oci-rsa-ansible-bastion
+ansible_playbook_name: "oci-rsa-ansible-bastion"
+
+# Wazuh specific variables
 wazuh_manager_version: 4.1.5-1
 wazuh_agent_version: 4.1.5-1
 wazuh_managers:
