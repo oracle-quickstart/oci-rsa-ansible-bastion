@@ -5,7 +5,7 @@ within the private network.
 
 ## Ansible Role: wazuh-ansible
 We are using **Galaxy** which provides pre-packaged units of work known to Ansible as roles and collections. Content from 
-roles and collections of the **wazuh-ansible** are referenced in oci-rsa-ansible-wazuh. This playbook installs and 
+roles and collections of the **wazuh-ansible** are referenced in oci-rsa-ansible-bastion. This playbook installs and 
 configures Wazuh agent and manager.
 
 ## Ansible Role: oci-rsa-ansible-base
@@ -13,7 +13,8 @@ Installs base packages and sets configuration for general security, monitoring, 
 on the oci-rsa-ansible-base can be found [here](PLACEHOLDER).
 
 ## Ansible Role: geerlingguy.clamav
-[geerlingguy.clamav](https://github.com/geerlingguy/ansible-role-clamav) installs ClamAV on Linux server.
+[geerlingguy.clamav](https://github.com/geerlingguy/ansible-role-clamav) installs ClamAV on Linux server. Content from 
+roles and collections of **geerlingguy.clamav** hosted on **Galaxy** are referenced in oci-rsa-ansible-bastion.
 
 ## Requirements
 
