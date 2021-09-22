@@ -2,7 +2,10 @@ ROLE: BASTION
 =========
 
 Installs the Bastion host running on Oracle Autonomous Linux. It will open SSH connection, and configure a one 
-time password for the opc user to log into the host.
+time password for the opc user to log into the host. It also installs the following packages:
+- pam_oath
+- oathtool
+- gen-oath-safe
 
 
 Requirements
@@ -10,96 +13,47 @@ Requirements
 
 This role will work on:
 
-- [Ansible core](https://docs.ansible.com/ansible-core/devel/index.html) >= 2.11.0
+- [Ansible core](https://docs.ansible.com/ansible-core/devel/index.html) >=  2.9.x
 - [Oracle Autonomous Linux](https://www.oracle.com/linux/autonomous-linux/) >= 7.9
 
 
 Role Variables
 --------------
 
-Overrides the Wazuh manager version to 4.1.5-1
+Setting the playbook name to `oci-rsa-ansible-bastion` to pass to the oci-rsa-ansible-base role. This role schedules the 
+cron job to run Ansible at regular intervals. 
 ```
-wazuh_manager_version: "4.1.5-1"
-```
-
-The wazuh_manager_cluster variable overrides the default configurations of the wazuh manager cluster.  The node type
-variable in Wazuh Manager cluster is by default set to `worker`. The `extra-variables.yml` file can be used to override 
-this variable to either use `manager` or `worker`.
-``` 
-wazuh_manager_cluster:
-  disable: 'no'
-  name: 'wazuh'
-  node_name: "{{ ansible_facts['nodename'] }}"
-  node_type: '{{ wazuh_node_type }}'
-  key: 'ugdtAnd7Pi9myP7CVts4qZaZQEQcRYZa'
-  port: '1516'
-  bind_addr: '0.0.0.0'
-  nodes:
-    - 'wazuhmasterinstance.wazuhsubnet.primaryvcn.oraclevcn.com'
-  hidden: 'no'
+ansible_playbook_name: "oci-rsa-ansible-bastion"
 ```
 
-Overrides the default filebeat node name.
+Overrides the Wazuh manager and agent version to `4.1.5-1`
 ```
-filebeat_node_name: '{{ ansible_fqdn }}'
-```
-
-Domain refers to the Wazuh subnet inside the primary VCN.
-```
-domain_name: 'wazuhsubnet.primaryvcn.oraclevcn.com'
+wazuh_manager_version: 4.1.5-1
+wazuh_agent_version: 4.1.5-1
 ```
 
-Overrides the filebeat version to 7.10.2
+Used to automatically registers the Wazuh agent to the manager. The agent registration happens only once during the playbook 
+run. If this process fails, then the user need to register the agents manually follwing the steps [here](https://documentation.wazuh.com/current/user-manual/registering/index.html).
 ```
-filebeat_version: 7.10.2
-```
-
-Overrides the Wazuh template branch to 4.1
-```
-wazuh_template_branch: 4.1
-```
-
-Sets the output hosts as the ElasticSearch Open Distro nodes.
-```
-filebeat_output_elasticsearch_hosts:
-  - "elasticnode0.{{ domain_name }}"
-  - "elasticnode1.{{ domain_name }}"
-  - "elasticnode2.{{ domain_name }}"
-```
-
-Sets the details of the Filebeat package; For example the url, name of the package etc.
-```
-filebeat_module_package_url: https://packages.wazuh.com/4.x/filebeat
-filebeat_module_package_name: wazuh-filebeat-0.1.tar.gz
-filebeat_module_package_path: /tmp/
-filebeat_module_destination: /usr/share/filebeat/module
-filebeat_module_folder: /usr/share/filebeat/module/wazuh
-```
-
-The local path to store the generated certificates (OpenDistro security plugin).
-```
-local_certs_path: "/etc/ssl/local"
+wazuh_managers:
+  - address: "{{ registration_address }}"
+    port: 1514
+    protocol: tcp
+    api_port: 55000
+    api_proto: https
+    api_user: wazuh
+    max_retries: 30
+    retry_interval: 10
+    register: yes
 ```
 
 Default Variables
 ------------
 
-Open Distro ElasticSearch security username and password
+The registration address is the domain name assigned to Wazuh load balancer. This is the default 
+value used by Terraform but can be overridden.
 ```
-elasticsearch_security_user: admin
-elasticsearch_security_password: changeme
-```
-
-Wazuh API username and password are by default set to `wazuh`
-```
-wazuh_api_users:
-  - username: "wazuh"
-    password: "wazuh"
-```
-
-The node type variable in Wazuh Manager cluster is by default set to `worker`.
-```
-wazuh_node_type: worker
+registration_address: "wazuh-lb.wazuh-cluster.local"
 ```
 
 Dependencies
@@ -110,26 +64,23 @@ None
 Example Playbook
 ----------------
 
-Use the oci-rsa-ansible-base role before to install the required software. An `extra-variables.yml` file can also be used 
-to pass in other variables. An example of how to use the role:
+Use the oci-rsa-ansible-base role before to install the required software. An example of how to use the role:
 
-    ---
-    - hosts: all
-      vars_files:
-        - ../extra-variables.yml
-      roles: 
-        - role: oci-rsa-ansible-base
-          become: true
-        - role: wazuh-cluster
-          become: true
-        - role: geerlingguy.clamav
-          become: true
-        - role: wazuh-ansible/wazuh-ansible/roles/wazuh/ansible-wazuh-manager
-          become: true
-        - role: wazuh-ansible/wazuh-ansible/roles/wazuh/ansible-filebeat-oss
-          become: true
-        - role: wazuh-logs
-          become: true
+```
+---
+- hosts: all
+  roles:
+    - role: oci-rsa-ansible-base
+      become: true
+    - role: geerlingguy.clamav
+      become: true
+    - role: wazuh-ansible/wazuh-ansible/roles/wazuh/ansible-wazuh-agent
+      become: true
+    - role: bastion
+      become: true
+    - role: oci-rsa-ansible-base/wazuh_agent_configuration
+      become: true
+``` 
 
 ## License
 
