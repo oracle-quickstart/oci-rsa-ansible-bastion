@@ -56,10 +56,6 @@ ansible-playbook -i localhost, $OCI_RSA_BASE/${playbook_name}/main.yml --connect
 The initial one time pin for the opc user is `56000`. You'll be prompted for this after authenticating with your SSH key 
 (defined during host provisioning). After the first login, you will be prompted to set up an authenticator program of your choice. If you fail to do so, you will lose access to the host.
 
-
-## Documentation
-
-
 ## The Team
 This repository was developed by the Oracle OCI Regulatory Solutions and Automation (RSA) team.
 
