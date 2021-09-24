@@ -1,38 +1,87 @@
-Role Name
+ROLE: BASTION
 =========
 
-A brief description of the role goes here.
+Installs the Bastion host running on Oracle Autonomous Linux. It will open SSH connection, and configure a one 
+time password for the opc user to log into the host. It also installs the following packages:
+- pam_oath
+- oathtool
+- gen-oath-safe
+
 
 Requirements
 ------------
 
-Any pre-requisites that may not be covered by Ansible itself or the role should be mentioned here. For instance, if the role uses the EC2 module, it may be a good idea to mention in this section that the boto package is required.
+This role will work on:
+
+- [Ansible core](https://docs.ansible.com/ansible-core/devel/index.html) >=  2.9.x
+- [Oracle Autonomous Linux](https://www.oracle.com/linux/autonomous-linux/) >= 7.9
+
 
 Role Variables
 --------------
 
-A description of the settable variables for this role should go here, including any variables that are in defaults/main.yml, vars/main.yml, and any variables that can/should be set via parameters to the role. Any variables that are read from other roles and/or the global scope (ie. hostvars, group vars, etc.) should be mentioned here as well.
+Setting the playbook name to `oci-rsa-ansible-bastion` to pass to the oci-rsa-ansible-base role. This role schedules the 
+cron job to run Ansible at regular intervals. 
+```
+ansible_playbook_name: "oci-rsa-ansible-bastion"
+```
+
+Overrides the Wazuh manager and agent version to `4.1.5-1`
+```
+wazuh_manager_version: 4.1.5-1
+wazuh_agent_version: 4.1.5-1
+```
+
+Used to automatically registers the Wazuh agent to the manager. The agent registration happens only once during the playbook 
+run. If this process fails, then the user need to register the agents manually follwing the steps [here](https://documentation.wazuh.com/current/user-manual/registering/index.html).
+```
+wazuh_managers:
+  - address: "{{ registration_address }}"
+    port: 1514
+    protocol: tcp
+    api_port: 55000
+    api_proto: https
+    api_user: wazuh
+    max_retries: 30
+    retry_interval: 10
+    register: yes
+```
+
+Default Variables
+------------
+
+The registration address is the domain name assigned to Wazuh load balancer. This is the default 
+value used by Terraform but can be overridden.
+```
+registration_address: "wazuh-lb.wazuh-cluster.local"
+```
 
 Dependencies
 ------------
 
-A list of other roles hosted on Galaxy should go here, plus any details in regards to parameters that may need to be set for other roles, or variables that are used from other roles.
+None
 
 Example Playbook
 ----------------
 
-Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
+Use the oci-rsa-ansible-base role before to install the required software. An example of how to use the role:
 
-    - hosts: servers
-      roles:
-         - { role: username.rolename, x: 42 }
+```
+---
+- hosts: all
+  roles:
+    - role: oci-rsa-ansible-base
+      become: true
+    - role: geerlingguy.clamav
+      become: true
+    - role: wazuh-ansible/wazuh-ansible/roles/wazuh/ansible-wazuh-agent
+      become: true
+    - role: bastion
+      become: true
+    - role: oci-rsa-ansible-base/wazuh_agent_configuration
+      become: true
+``` 
 
-License
--------
+## License
 
-BSD
-
-Author Information
-------------------
-
-An optional section for the role authors to include contact information, or a website (HTML is not allowed).
+This repository and its contents are licensed under [UPL 1.0](https://opensource.org/licenses/UPL).
