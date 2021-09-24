@@ -72,8 +72,6 @@ Use the oci-rsa-ansible-base role before to install the required software. An ex
   roles:
     - role: oci-rsa-ansible-base
       become: true
-    - role: geerlingguy.clamav
-      become: true
     - role: wazuh-ansible/wazuh-ansible/roles/wazuh/ansible-wazuh-agent
       become: true
     - role: bastion
