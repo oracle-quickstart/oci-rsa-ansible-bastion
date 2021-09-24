@@ -12,10 +12,6 @@ configures Wazuh agent and manager.
 Installs base packages and sets configuration for general security, monitoring, and auditing purposes. More information 
 on the oci-rsa-ansible-base can be found [here](PLACEHOLDER).
 
-## Ansible Role: geerlingguy.clamav
-[geerlingguy.clamav](https://github.com/geerlingguy/ansible-role-clamav) installs ClamAV on Linux server. Content from 
-roles and collections of **geerlingguy.clamav** hosted on **Galaxy** are referenced in oci-rsa-ansible-bastion.
-
 ## Requirements
 
 - [Ansible core](https://docs.ansible.com/ansible-core/devel/index.html) >= 2.9.x
@@ -25,7 +21,6 @@ Dependencies
 ------------
 
 A list of other roles hosted on Galaxy:
-* [geerlingguy.clamav](https://github.com/geerlingguy/ansible-role-clamav): Installs ClamAV on Linux server.
 * [ansible-wazuh-agent](https://github.com/wazuh/wazuh-ansible/tree/master/roles/wazuh/ansible-wazuh-agent): This role 
   will install and configure a Wazuh Agent.
   
